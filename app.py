@@ -5,9 +5,6 @@ import plotly.graph_objects as go
 # Page config
 st.set_page_config(page_title="75%-25% Spread ex-GFC", layout="wide")
 
-# Title
-st.title("Estimates of the Credit Curve Spread: 75% – 25% LTVs (ex-GFC)")
-
 # Load data
 file_path = "Data 75%-25%.xlsx"  # Assumes file is in same directory
 df = pd.read_excel(file_path)
