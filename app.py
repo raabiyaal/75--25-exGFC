@@ -49,10 +49,12 @@ for label, y_val in lines.items():
         hoverinfo='skip'
     ))
 
-title=dict(
-    text='Estimates of the Credit Curve Spread: 75% – 25% LTVs<br>Mortgage Loans for the Years 1996 through 1Q 2025',
-    x=0.5,
-    xanchor='center'
+# Layout and styling
+fig.update_layout(
+    title=dict(
+        text='Estimates of the Credit Curve Spread: 75% – 25% LTVs<br>Mortgage Loans for the Years 1996 through 1Q 2025',
+        x=0.5,
+        xanchor='center'
     ),
     yaxis=dict(
         title="Estimated Annual Interest Expense (k<sub>d</sub>)",
