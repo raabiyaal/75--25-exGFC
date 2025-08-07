@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 # Page config
-st.set_page_config(page_title="75%-25% Spread ex-GFC", layout="wide")
+st.set_page_config(layout="wide")
 
 # Load data
 file_path = "Data 75%-25%.xlsx"  # Assumes file is in same directory
