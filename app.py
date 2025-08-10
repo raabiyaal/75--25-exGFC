@@ -24,21 +24,21 @@ fig.add_trace(go.Scatter(
 
 # Horizontal lines using add_hline with annotations and positions
 fig.add_hline(
-    y=df['`x'].iloc[0],
+    y=df['x'].iloc[0],
     line=dict(color='green', dash='dash', width=2),
     annotation_text="Average Spread: x̄ (excluding GFC)",  # Added excluding GFC here
     annotation_position="top left",
     name="Average Spread: x̄ (excluding GFC)"
 )
 fig.add_hline(
-    y=df['`x + s'].iloc[0],
+    y=df['x + s'].iloc[0],
     line=dict(color='green', dash='dot', width=2),
     annotation_text="Average Spread: x̄ + σ",
     annotation_position="top left",
     name="Average Spread: x̄ + σ"
 )
 fig.add_hline(
-    y=df['`x – s'].iloc[0],
+    y=df['x – s'].iloc[0],
     line=dict(color='green', dash='dot', width=2),
     annotation_text="Average Spread: x̄ – σ",
     annotation_position="bottom left",
