@@ -18,7 +18,7 @@ fig.add_trace(go.Scatter(
     y=df['Spread'],
     mode='lines',
     line=dict(color='green', width=2),
-    name='Spot Spread: 75% – 25%',
+    name='Spread: 75% – 25%',
     hovertemplate='%{x|%b %d, %Y} — %{y:.1%}<extra></extra>'
 ))
 
