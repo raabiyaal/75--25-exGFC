@@ -1,80 +1,72 @@
-import streamlit as st
 import pandas as pd
+from dash import Dash, dcc, html
 import plotly.graph_objects as go
+import os
 
-# Page config
-st.set_page_config(layout="wide")
-
-# Load data
-file_path = "Data 75%-25%.xlsx"  # Assumes file is in same directory
+# Load data inside the app file
+file_path = r"Data 75%-25%.xlsx"
 df = pd.read_excel(file_path)
-df.columns = [col.strip(" `") for col in df.columns]
 df['Period'] = pd.to_datetime(df['Period'])
 
-# Preprocessing
-df['Spread_mult100'] = df['Spread'] * 100
-lines = {
-    'Average Spread: x\u0304 (excluding GFC)': df['x'].iloc[0] * 100,
-    'Average Spread: x\u0304 + σ': df['x + s'].iloc[0] * 100,
-    'Average Spread: x\u0304 – σ': df['x – s'].iloc[0] * 100,
-}
+app = Dash(__name__)
 
-# Build Plotly figure
 fig = go.Figure()
 
+# Main spread line (no multiplication, raw decimal)
 fig.add_trace(go.Scatter(
     x=df['Period'],
-    y=df['Spread_mult100'],
+    y=df['Spread'],
     mode='lines',
+    line=dict(color='green', width=2),
     name='Spot Spread: 75% – 25%',
-    line=dict(color='green'),
-    hovertemplate='Spread: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x|%b %d, %Y} — %{y:.1%}<extra></extra>'
 ))
 
-line_styles = {
-    'Average Spread: x\u0304 (excluding GFC)': dict(dash='dash', width=2),
-    'Average Spread: x\u0304 + σ': dict(dash='dot'),
-    'Average Spread: x\u0304 – σ': dict(dash='dot'),
-}
-
-for label, y_val in lines.items():
-    fig.add_trace(go.Scatter(
-        x=[df['Period'].min(), df['Period'].max()],
-        y=[y_val, y_val],
-        mode='lines+text',
-        name=label,
-        line=dict(color='green', **line_styles[label]),
-        text=[label, ''],
-        textposition='top right',
-        hoverinfo='skip'
-    ))
-
-fig.update_layout(
-    title=dict(
-        text=None,
-        x=0.5,
-        xanchor='center'
-    ),
-    yaxis=dict(
-        title="Estimated Annual Interest Expense (k<sub>d</sub>)",
-        ticks="outside",
-        showgrid=True,
-        zeroline=True,
-        zerolinewidth=1,
-        zerolinecolor='LightPink',
-        ticksuffix="%",
-    ),
-    xaxis=dict(
-        tickformat='%Y',
-        dtick="M24",
-        hoverformat='%Y-%m-%d'
-    ),
-    hovermode='x unified',
-    template='plotly_white',
-    legend=dict(y=0.99, x=0.01),
-    margin=dict(t=60, l=60, r=40, b=60),
-    height=600
+# Horizontal lines using add_hline with annotations and positions
+fig.add_hline(
+    y=df['`x'].iloc[0],
+    line=dict(color='green', dash='dash', width=2),
+    annotation_text="Average Spread: x̄ (excluding GFC)",  # Added excluding GFC here
+    annotation_position="top left",
+    name="Average Spread: x̄ (excluding GFC)"
+)
+fig.add_hline(
+    y=df['`x + s'].iloc[0],
+    line=dict(color='green', dash='dot', width=2),
+    annotation_text="Average Spread: x̄ + σ",
+    annotation_position="top left",
+    name="Average Spread: x̄ + σ"
+)
+fig.add_hline(
+    y=df['`x – s'].iloc[0],
+    line=dict(color='green', dash='dot', width=2),
+    annotation_text="Average Spread: x̄ – σ",
+    annotation_position="bottom left",
+    name="Average Spread: x̄ – σ"
 )
 
-# Render with Streamlit
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(
+    yaxis_title=r'Estimated Annual Interest Expense (k<sub>d</sub>)',
+    yaxis=dict(range=[0, 0.1], tickformat=".0%", dtick=0.01),
+    legend=dict(
+        font=dict(size=12),
+        bgcolor='rgba(255,255,255,0.8)',
+        bordercolor='black',
+        borderwidth=1,
+        x=0.01,  # legend x position (near left)
+        y=0.99,  # legend y position (near top)
+        yanchor='top',
+        xanchor='left'
+    ),
+    template='simple_white',
+    showlegend=True,
+    margin=dict(t=30, b=20, l=20, r=20)
+)
+
+app.layout = html.Div([
+    dcc.Graph(figure=fig, style={'width': '90%', 'height': '80vh', 'margin': 'auto'})
+])
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 8050))
+    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
